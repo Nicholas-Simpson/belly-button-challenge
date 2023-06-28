@@ -19,7 +19,7 @@ let url = 'https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1
       };
   
       // If you want to do the bonus, you can make the gauge chart here
-  
+      
   
     ;
   })
@@ -35,20 +35,38 @@ let url = 'https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1
       let result = filteredArray[0]
   
       // Pull the desired information (ids, labels, values) from your filtered data
-      let otuLabel = result.sort((a,b) => b.otu_ids - a.otu_ids)
-      let otuValues = result.sort((a,b) => b.sample_values - a.sample_values)
-  
+      let otuIds = result.otu_ids
+      let otuValues = result.sample_values
+      let otuLabels = result.otu_labels
       // Build a Bubble Chart
+      var trace2 = {
+        x: otuIds,
+        y: otuValues,
+        text: otuLabels,
+        mode: 'markers',
+        marker: {
+          size: otuValues,
+          color: otuIds
+        }
+      };
       
+      var data = [trace2];
+      
+      var layout = {
+        title: 'Bacteria Cultures per Sample',
+        xaxis:{title:'OTU ID'}
+      };
+      
+      Plotly.newPlot('bubble', data, layout);
   
-      // Slice the data for your bar chart and order it (you can just use reverse)
+
   
   
       // Build a Horizontal Bar Chart
       let trace1 = {
-        x:otuValues.map(object => object.sample_values),
-        y:otuLabel.map(object => object.otu_ids),
-        text: otuLabel.map(object => object.otu_ids),
+        x:otuValues.slice(0,10).reverse(),
+        y:otuIds.slice(0,10).map(ID => `OTU ${ID}`).reverse(),
+        text: otuLabels.slice(0,10).reverse(),
         type:'bar',
         orientation:'h'
       }
@@ -79,13 +97,14 @@ let url = 'https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1
         buildCharts(firstSample)
         buildMetadata(firstSample)
         
+        
     });
 }  
   function optionChanged(newSample) {
     // Change your data and update your plots/metadata when newSample is selected from the dropdown
     buildCharts(newSample);
     buildMetadata(newSample);
-  
+    
   }
   
   // Initialize the dashboard
